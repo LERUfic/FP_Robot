@@ -1,17 +1,15 @@
-####################################################
-# Modified by Nazmi Asri                           #
-# Original code: http://thecodacus.com/            #
-# All right reserved to the respective owner       #
-####################################################
-
 # Import OpenCV2 for image processing
 import cv2
 
 # Import numpy for matrices calculations
 import numpy as np
-
 import os 
-
+#NXT
+import nxt.locator
+import nxt.brick
+from nxt.motor import *
+import time
+import sys
 def assure_path_exists(path):
     dir = os.path.dirname(path)
     if not os.path.exists(dir):
@@ -35,8 +33,11 @@ faceCascade = cv2.CascadeClassifier(cascadePath);
 font = cv2.FONT_HERSHEY_SIMPLEX
 
 # Initialize and start the video frame capture
-cam = cv2.VideoCapture('rtsp://10.151.36.114:8554/live.sdp')
+cam = cv2.VideoCapture('rtsp://10.151.252.166:8080/h264_pcm.sdp')
 
+b = nxt.locator.find_one_brick()
+
+scene =0
 # Loop
 while True:
     # Read the video frame
@@ -59,7 +60,7 @@ while True:
 
         # Check the ID if exist 
         if(Id == 1):
-            Id = "Satria {0:.2f}%".format(round(100 - confidence, 2))
+            Id = "Peminjam {0:.2f}%".format(round(100 - confidence, 2))
 
         confidence_percent =  round(100 - confidence, 2)
         print(confidence_percent)
@@ -67,6 +68,24 @@ while True:
         if(confidence_percent > 50):
             cv2.rectangle(im, (x-22,y-90), (x+w+22, y-22), (0,255,0), -1)
             cv2.putText(im, str(Id), (x,y-40), font, 1, (255,255,255), 3)
+            
+            #NXT Code
+            if scene==0:
+                m_left = Motor(b, PORT_B)
+                m_left.turn(-10, 10)
+                scene=1
+                time.sleep(10)
+            elif scene==1:
+                m_left = Motor(b, PORT_B)
+                m_left.turn(10, 10)
+                scene=2
+                time.sleep(10)
+            elif scene==2:
+                m_right = Motor(b, PORT_A)
+                m_right.turn(-10, 10)
+                scene=3
+                time.sleep(10)
+                sys.exit(1)
 
     # Display the video frame with the bounded rectangle
     cv2.imshow('im',im) 

@@ -1,9 +1,3 @@
-####################################################
-# Modified by Nazmi Asri                           #
-# Original code: http://thecodacus.com/            #
-# All right reserved to the respective owner       #
-####################################################
-
 # Import OpenCV2 for image processing
 import cv2
 import os
@@ -15,7 +9,7 @@ def assure_path_exists(path):
 
 # Start capturing video
 # vid_cam = cv2.VideoCapture(0)
-vid_cam = cv2.VideoCapture('rtsp://10.151.36.114:8554/live.sdp')
+vid_cam = cv2.VideoCapture('rtsp://10.151.252.166:8080/h264_pcm.sdp')
 # Detect object in video stream using Haarcascade Frontal Face
 face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
@@ -59,7 +53,7 @@ while(True):
         break
 
     # If image taken reach 100, stop taking video
-    elif count>100:
+    elif count>40:
         break
 
 # Stop video
