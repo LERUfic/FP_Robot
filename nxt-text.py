@@ -12,11 +12,10 @@ Usage:  nxt_test (takes no arguments except --help)'''
 import nxt.locator
 import nxt.brick
 from nxt.motor import *
-
+import nxt.bluesock
 try:
-    b = nxt.locator.find_one_brick()
-    m_left = Motor(b, PORT_B)
-    m_left.turn(5, 10)
+    # b = nxt.locator.find_one_brick()
+    b = nxt.bluesock.BlueSock('00:16:53:06:8C:55').connect()
     name, host, signal_strength, user_flash = b.get_device_info()
     print 'NXT brick name: %s' % name
     print 'Host address: %s' % host
