@@ -5,11 +5,14 @@ import cv2
 import numpy as np
 import os 
 #NXT
+import nxt.bluesock
 import nxt.locator
 import nxt.brick
 from nxt.motor import *
+from nxt.sensor import *
 import time
 import sys
+
 def assure_path_exists(path):
     dir = os.path.dirname(path)
     if not os.path.exists(dir):
@@ -35,8 +38,8 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 # Initialize and start the video frame capture
 cam = cv2.VideoCapture('rtsp://10.151.252.166:8080/h264_pcm.sdp')
 
-b = nxt.locator.find_one_brick()
-
+# b = nxt.locator.find_one_brick()
+b = nxt.bluesock.BlueSock('00:16:53:06:8C:55').connect()
 scene =0
 # Loop
 while True:
@@ -68,24 +71,29 @@ while True:
         if(confidence_percent > 50):
             cv2.rectangle(im, (x-22,y-90), (x+w+22, y-22), (0,255,0), -1)
             cv2.putText(im, str(Id), (x,y-40), font, 1, (255,255,255), 3)
-            
+            m_left = Motor(b, PORT_A)        
+            m_right = Motor(b, PORT_B)
             #NXT Code
             if scene==0:
-                m_left = Motor(b, PORT_B)
-                m_left.turn(-10, 10)
+                m_right.turn(-5, 50)
+                while Touch(b, PORT_4).get_sample()==False:
+                    continue
+                time.sleep(1)
+                m_right.turn(5, 50)
+                time.sleep(1)
+                m_left.turn(-5, 50)
                 scene=1
-                time.sleep(10)
             elif scene==1:
-                m_left = Motor(b, PORT_B)
-                m_left.turn(10, 10)
-                scene=2
-                time.sleep(10)
-            elif scene==2:
-                m_right = Motor(b, PORT_A)
-                m_right.turn(-10, 10)
-                scene=3
-                time.sleep(10)
-                sys.exit(1)
+                if Touch(b, PORT_1).get_sample()==True:
+                    time.sleep(3)
+                    m_left.turn(5, 50)
+                    time.sleep(1)
+                    m_right.turn(-5, 50)
+                    while Touch(b, PORT_4).get_sample()==True:
+                        continue
+                    time.sleep(3)
+                    m_right.turn(5, 50)
+                    sys.exit(1)
 
     # Display the video frame with the bounded rectangle
     cv2.imshow('im',im) 

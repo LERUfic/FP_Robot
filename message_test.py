@@ -3,7 +3,7 @@
 #During this test you need to run any program on the brick
 #which doesn't use the messaging system. Most programs fit
 #this requirement.
-
+from nxt.motor import *
 import nxt.locator
 
 b = nxt.locator.find_one_brick()
